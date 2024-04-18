@@ -77,19 +77,22 @@ public class Main {
 		
 		
 		}while(opcion!=8);
+		sc.close();
 	}
 	/**
 	 * se agregan objetos al array de jugadores
 	 */
 	public static void agregarJugador() {
+		sc.nextLine();
 		boolean bandera;
 		Jugador jugador = new Jugador();
 		do {
-			bandera=true;			
+			bandera=true;	
+			
 			System.out.println("\nIngrese el apellido:");
-	        String apellido = sc.next();
+	        String apellido = sc.nextLine();
 	        System.out.println("Ingrese el nombre:");
-		    String nombre = sc.next();
+		    String nombre = sc.nextLine();
 		    buscarJugador(nombre, apellido); 
 		    if(buscarJugador(nombre, apellido) != null) {
 		    	System.out.println("Jugador Existente");
@@ -162,35 +165,151 @@ public class Main {
 	}
 
 	public static void mostrarJugador() {
+		sc.nextLine();
 		System.out.println("\nIngrese el apellido:");
-        String apellido = sc.next();
+        String apellido = sc.nextLine();
         System.out.println("Ingrese el nombre:");
-	    String nombre = sc.next();
-	    buscarJugador(nombre, apellido); 
+	    String nombre = sc.nextLine();
 	    if(buscarJugador(nombre, apellido) != null) {
-	    	buscarJugador(nombre, apellido).toString();
+	    	System.out.println(buscarJugador(nombre, apellido).toString());
 	    }
 	    else System.out.println("No existe Jugador para mostrar");
 	}
 	
 	public static void modificarJugador() {
+		sc.nextLine();
 		int i;
+		int opcion=0;
+		boolean bandera = true;
 		System.out.println("\nIngrese el apellido:");
-        String apellido = sc.next();
+		String apellido = sc.nextLine();
         System.out.println("Ingrese el nombre:");
-	    String nombre = sc.next();
-	    buscarJugador(nombre, apellido); 
+	    String nombre = sc.nextLine();
 	    if(buscarJugador(nombre, apellido) != null) {
 	    	i=jugadores.indexOf(buscarJugador(nombre, apellido));
 	    	System.out.println("Jugador a modificar:");
-	    	buscarJugador(nombre, apellido).toString();
-	    	jugadores.remove(i);
-	    	agregarJugador();
+	    	System.out.println("Que dato desea modificar?:");
+	    	System.out.println("1 - Nombre "+ jugadores.get(i).getNombre());
+	    	System.out.println("2 - Apellido "+ jugadores.get(i).getApellido());
+	    	System.out.println("3 - fechaNacimiento "+ jugadores.get(i).getFechaNacimiento());
+	    	System.out.println("4 - Nacionalidad "+ jugadores.get(i).getNacionalidad());
+	    	System.out.println("5 - Estatura "+ jugadores.get(i).getEstatura());
+	    	System.out.println("6 - Peso "+ jugadores.get(i).getPeso());
+	    	System.out.println("7 - Poscion: "+ jugadores.get(i).getPosicion());
+	    	System.out.println("Ingrese opcion");
+	    	do {
+	    		bandera = true;
+		    	try {
+		    		opcion = sc.nextInt();
+		    	} catch(InputMismatchException e) {
+		    		System.out.println("La estatura no es valida");
+		        	bandera = false;
+		    	}
+	
+		    	sc.nextLine();	
+	    	}while(bandera == false && opcion<1 && opcion>7);
+	    	switch(opcion){
+	    	case 1: 
+		    	do {
+		    		bandera = true;
+		    		try {
+			    		System.out.println("\nIngrese el apellido:");
+			    		jugadores.get(i).setApellido(sc.nextLine());
+		    		} catch(InputMismatchException e) {
+		    			System.out.println("Erro ingrese de nuevo:");
+		    		}
+		    		sc.nextLine();
+		    	} while(bandera == false);
+	    		break;	    		
+	    	case 2:
+	    		do {
+	    			bandera = true;
+		    		try {
+			    		System.out.println("\nIngrese el nombre:");
+			    		jugadores.get(i).setApellido(sc.nextLine());
+		    		} catch(InputMismatchException e) {
+		    			System.out.println("Erro ingrese de nuevo:");
+		    		}
+		    		sc.nextLine();
+	    		} while(bandera == false);
+	    		break;
+	    	case 3:
+	    		do {
+	    			bandera = true;
+	    		try {
+			        System.out.println("Ingrese la fecha de nacimiento (AAAA-MM-DD):");
+			        jugadores.get(i).setFechaNacimiento(LocalDate.parse(sc.next()));
+		        } catch (DateTimeParseException e) {
+		        	System.out.println("La fecha no es valida");
+		        	bandera = false;
+		        }
+	    		sc.nextLine(); 
+	    		} while(bandera == false);
+	    	case 4:
+	    		do {
+	    			bandera = true;
+	    		try {
+			        System.out.println("Ingrese la nacionalidad:");
+			        jugadores.get(i).setNacionalidad(sc.next());
+		        } catch (InputMismatchException e) {
+		        	System.out.println("La fecha no es valida");
+		        	bandera = false;
+		        }
+	    		sc.nextLine(); 
+	    	} while(bandera == false);
+	    		break;
+	    	case 5:
+	    		do {
+	    			bandera = true;
+	    		 try {
+				        System.out.println("Ingrese la estatura:");
+				        jugadores.get(i).setEstatura(sc.nextFloat());
+				        
+			        } catch (InputMismatchException e ) {
+			        	System.out.println("La estatura no es valida");
+			        	bandera = false;
+					}
+	    		 sc.nextLine(); 
+	    		} while(bandera == false);
+	    		 break;
+	    	case 6:
+	    		do {
+	    			bandera = true;
+	    		try {
+			        System.out.println("Ingrese el peso:");
+			        jugadores.get(i).setPeso(sc.nextFloat());
+			        
+		        } catch (InputMismatchException e ) {
+		        	System.out.println("El peso no es valido");
+		        	bandera = false;
+				}
+	    		sc.nextLine(); 
+	    	} while(bandera == false);
+	    		break;
+	    	case 7:
+	    		do {
+	    			bandera = true;
+	    		try {
+			        System.out.println("Ingrese la posición:");
+			        jugadores.get(i).setPosicion(sc.nextLine());
+			     
+		        } catch (InputMismatchException e ) {
+		        	System.out.println("La posicion no es valida");
+		        	bandera = false;
+				}	
+	    		sc.nextLine(); 
+	    		} while(bandera == false);
+	    		break;
+	    	default: 
+	    		System.out.println("Opcion incorrecta, ingrese nuevamente");
+	    		break;
+	    	}
 	    }
 	    else System.out.println("No existe Jugador para modificar");
 	}
 	
 	public static void eliminarJugador() {
+		sc.nextLine();
 		int i;
 		System.out.println("\nIngrese el apellido:");
         String apellido = sc.next();
@@ -199,10 +318,8 @@ public class Main {
 	    buscarJugador(nombre, apellido); 
 	    if(buscarJugador(nombre, apellido) != null) {
 	    	i=jugadores.indexOf(buscarJugador(nombre, apellido));
-	    	System.out.println("Jugador a modificar:");
-	    	buscarJugador(nombre, apellido).toString();
 	    	jugadores.remove(i);
-	    	agregarJugador();
+	    	System.out.println("Jugador a eliminado:");
 	    }
 	    else System.out.println("No existe Jugador para modificar");
 	}
