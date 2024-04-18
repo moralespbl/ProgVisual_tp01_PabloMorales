@@ -74,7 +74,6 @@ public class Main {
 				 break;		 	
 		}
 		
-		// probabilidad. muestreo descri`tiva 1.2300 lunes 29 mart30 
 		
 		
 		}while(opcion!=8);

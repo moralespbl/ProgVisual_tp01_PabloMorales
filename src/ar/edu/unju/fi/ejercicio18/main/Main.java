@@ -1,7 +1,8 @@
 package ar.edu.unju.fi.ejercicio18.main;
 
-import java.rmi.Remote;
+
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -33,23 +34,31 @@ public class Main {
 			System.out.println("9 – Salir.");
 			System.out.println("===================================================================");
 			System.out.println("Ingrese una opcion:");
-			opcion= sc.nextInt();
+			boolean bandera;
+			do {
+				bandera = true;
+				try {
+					opcion= sc.nextInt();
+				}
+				catch(InputMismatchException e ) {
+					System.out.println("Codigo mal ingresado:");
+					bandera = false;
+				}
+			    sc.nextLine();
+			}while(bandera == false);			
 			switch(opcion) {
 			case 1: altaDestinoTuristico();break;
 			case 2: mostrarDestinos();break;
 			case 3: modificarDestino(); break;
 			case 4: limpiarDestinos(); break;
-			case 5: break;
-			case 6: break;
-			case 7: break;
-			case 8: break;
-			case 9: break;
-				default: break;
-					
-				
+			case 5: eliminarDestino();break;
+			case 6: ordenarDestinos(); break;
+			case 7: mostrarPaises(); break;
+			case 8: mostrarDestinosPorPais(); break;
+			case 9: System.out.println("Fin del Programa");; break;
+				default: break;					
 			}
-		}while(opcion != 9);
-		
+		}while(opcion != 9);	
 		
 	}
 	
@@ -70,11 +79,10 @@ public class Main {
 	}
 	
 	public static void altaDestinoTuristico() {
-		Pais pais = new Pais();
-		
-		int codigo = 0;
-		String destinoBuscado=null;
-		validarIngresoDestino(codigo, destinoBuscado);
+		boolean bandera;
+		Pais pais = new Pais();		
+		int codigo = validarCodigo();
+		String destinoBuscado = validarDestino();
 		DestinoTuristico destinoTuristico = new DestinoTuristico();
 		destinoTuristico = buscarDestino(codigo,destinoBuscado);
 		if(destinoTuristico == null) {
@@ -82,50 +90,92 @@ public class Main {
 			destinoNuevo.setCodigo(codigo);
 	        destinoNuevo.setNombre(destinoBuscado);
 	        System.out.println("Ingrese Precio: ");
-	        destinoNuevo.setPrecio(sc.nextDouble());
-	        System.out.println("Nuevo destino ingresado ");	     
+	        do {
+	        	bandera = true;
+	        	try {
+	        		destinoNuevo.setPrecio(sc.nextDouble());
+	        	}catch(InputMismatchException e ) {
+					System.out.println("Ingrese solo numeros");
+					bandera = false;
+				}
+	        	 sc.nextLine();
+			}while(bandera == false );	              
+	        
 			if( buscarPais(codigo) == null) {
 				System.out.println("Pais inexistente: ");
 				agregarPais(codigo);				
 			}
 			pais=buscarPais(codigo);
-			destinoNuevo.setPais(pais);
-			System.out.println("Ingrese Cantidad de dias: ");
-	        destinoNuevo.setCantidadDias(sc.nextInt());
-	        sc.nextLine();
+			destinoNuevo.setPais(pais);			
+			do {
+				bandera = true;
+				try {
+					System.out.println("Ingrese Cantidad de dias: ");
+					destinoNuevo.setCantidadDias(sc.nextInt());				   
+				} catch(InputMismatchException e ) {
+					System.out.println("Ingrese solo enteros");
+					bandera = false;
+				}
+				 sc.nextLine();
+			}while(bandera == false );
 			destinos.add(destinoNuevo);
+			System.out.println("Nuevo destino ingresado ");	     
 		} else {
 			System.out.println("El destino ya existe");
-		}
-		
+		}		
 	}
-	
-	public static void validarIngresoDestino(int codigo, String destinoBuscado) {
-		boolean bandera;	
+
+	/**
+	 * valida que el tipo de datos ingresado en el scanner sea
+	 * de tipo intero, de lo contrario vuelve a solicitar el ingreso de dato
+	 * @return un tipo de dato entero
+	 */
+	public static int validarCodigo() {
+		boolean bandera;
+		int codigo=0;
 		do {
 			bandera = true;
 			try {
 				System.out.println("Ingrese el codigo del pais:");
 			    codigo = sc.nextInt();
-			    sc.nextLine();
+			    
 			} catch(InputMismatchException e ) {
 				System.out.println("Codigo mal ingresado:");
 				bandera = false;
 			}
-		}while(bandera == false );	
+		    sc.nextLine();
+		}while(bandera == false );			
+		return codigo;		
+	}
+	
+	/**
+	 * valida que el tipo de datos ingresado en el scanner sea
+	 * de tipo String, de lo contrario vuelve a solicitar el ingreso de dato
+	 * @return un tipo de dato String
+	 */
+	public static String validarDestino() {
+		boolean bandera;
+		String destinoBuscado=null;
 		do {
 			bandera = true;
 			try {
 				System.out.println("Ingrese destino turistico:");
-			    destinoBuscado = sc.next();
-			    sc.nextLine();
+			    destinoBuscado = sc.nextLine();
 			} catch(InputMismatchException e ) {
 				System.out.println("Ingrese solo cadena de caracteres:");
 				bandera = false;
 			}
+			sc.nextLine();
 		}while(bandera == false );	
+		return destinoBuscado;
 	}
 	
+	/**
+	 * busca en el ArrayList de destino turisticos si existe el destino
+	 * @param codigo
+	 * @param destinoBuscado
+	 * @return devuelve el destino encontrado o null si no lo encuentra
+	 */
 	public static DestinoTuristico buscarDestino(int codigo, String destinoBuscado) {	
 	    DestinoTuristico destinoEncontrado = null;
 	    for( DestinoTuristico destino: destinos) {
@@ -136,18 +186,26 @@ public class Main {
 		return destinoEncontrado;
 	}
 	
+	/**
+	 * agrega al Array paises el objeto pais ingresado
+	 * @param codigoPais
+	 */
 	public static void agregarPais(int codigoPais) {
 		Pais pais = new Pais();
-			pais.setCodigo(codigoPais);
-			System.out.println("Ingrese el nombre del pais: ");
-			pais.setNombre(sc.next());
-			sc.nextLine();
-			paises.add(pais);	
-			System.out.println("Pais agregado");
+		pais.setCodigo(codigoPais);
+		System.out.println("Ingrese el nombre del pais: ");
+		pais.setNombre(sc.next());
+		sc.nextLine();
+		paises.add(pais);	
+		System.out.println("Pais agregado");
 	}
 	
-	public static Pais buscarPais(int codigo) {
-		
+	/**
+	 * busca en el ArrayList paises el codigo ingresa
+	 * @param codigo
+	 * @return el objeto pais si lo encuentra de lo contrario null
+	 */
+	public static Pais buscarPais(int codigo) {		
 		Pais paisEncontrado = null;
 		for (Pais pais: paises) {
 			if(pais.getCodigo() == codigo) {
@@ -162,47 +220,67 @@ public class Main {
 		destinos.forEach(d->System.out.println(d));
 	}
 	
+	/**
+	 * solicita ingresar el codigo y destino, si lo encuentra
+	 * permite modificar el pais del mismo
+	 * si no existe el pais permite su creacion y añadirlo al 
+	 * arraylist paises
+	 */
 	public static void modificarDestino() {
-		int codigo = 0;
+		Pais paisNuevo = null;
 		int indice=0;
-		boolean bandera=true;
-		String destinoBuscado=null;
-		validarIngresoDestino(codigo, destinoBuscado);
-		DestinoTuristico destinoTuristico = new DestinoTuristico();
+		int codigo = validarCodigo();
+		String destinoBuscado = validarDestino();				
+		DestinoTuristico destinoTuristico = new DestinoTuristico();		
 		destinoTuristico = buscarDestino(codigo,destinoBuscado);		
-		if(destinoTuristico != null) {
+		if(destinoTuristico != null) {			
+			System.out.println("Ingrese codigo del nuevo pais: ");
+			codigo = validarCodigo();
+			if(buscarPais(codigo) == null) {
+				agregarPais(codigo);
+			}
+			paisNuevo = buscarPais(codigo);
 			indice = destinos.indexOf(destinoTuristico);
-			do {
-				try {
-					destinos.get(indice).setNombre(sc.next());
-				}
-				catch(InputMismatchException e ){
-					System.out.println("Ingrese solo cadena de caracteres");
-				}
-			}while (bandera == false);		
-			
+			destinos.get(indice).setPais(paisNuevo);
 		} else {
 			System.out.println("El destino no existe");
 		}		
 	}
 	
 	public static void limpiarDestinos() {
-		destinos.forEach(d->destinos.remove(d));	
+		destinos.clear();	
 	}
 	
 	public static void eliminarDestino() {
-		
+		int indice=0;
+		int codigo = validarCodigo();
+		String destinoBuscado = validarDestino();	
+		DestinoTuristico destinoTuristico = new DestinoTuristico();
+		destinoTuristico = buscarDestino(codigo,destinoBuscado);		
+		if(destinoTuristico != null) {
+			indice = destinos.indexOf(destinoTuristico);
+			destinos.remove(indice);				
+		} else {
+			System.out.println("El destino no existe");
+		}		
 	}
 	
 	public static void ordenarDestinos() {
-		
+		destinos.sort(Comparator.comparing(DestinoTuristico::getNombre));
+		destinos.forEach(d->System.out.println(d));
 	}
 	
 	public static void mostrarPaises() {
-		
+		paises.forEach(p->System.out.println(p));
 	}
 	
 	public static void mostrarDestinosPorPais() {
+		int codigo = validarCodigo();
+		for(DestinoTuristico destino: destinos) {
+			if(destino.getCodigo() == codigo) {
+				System.out.println(destino.toString());
+			}
+		}
 		
 	}	
 	
